@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MirrorChat</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <h1>MirrorChat</h1>
+        <button id="new-chat-btn" class="sidebar-btn">New chat</button>
+        <input id="search-input" type="search" placeholder="Search chats" aria-label="Search chats" />
+        <h2>Your chats</h2>
+        <ul id="chat-list" class="chat-list"></ul>
+      </aside>
+
+      <main class="chat-view">
+        <header class="chat-header">
+          <input id="chat-title" value="Untitled Chat" aria-label="Chat title" />
+          <p>
+            MirrorChat is for guided self-talk. You write both sides to solve your own problems and
+            to resist over-reliance on AI tools.
+          </p>
+        </header>
+
+        <section id="message-list" class="message-list" aria-live="polite"></section>
+
+        <form id="message-form" class="composer">
+          <label>
+            Voice
+            <select id="speaker-select">
+              <option value="you">You</option>
+              <option value="mirror">Mirror</option>
+            </select>
+          </label>
+          <label class="grow">
+            Message
+            <textarea id="message-input" rows="3" placeholder="Write your next message..."></textarea>
+          </label>
+          <button type="submit">Add message</button>
+        </form>
+      </main>
+    </div>
+
+    <template id="message-template">
+      <article class="message">
+        <header>
+          <strong class="speaker"></strong>
+        </header>
+        <p class="content"></p>
+      </article>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
