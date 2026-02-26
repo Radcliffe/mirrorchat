@@ -74,6 +74,30 @@ function createChat() {
   render();
 }
 
+function deleteChat(chatId) {
+  const chatToDelete = chats.find((chat) => chat.id === chatId);
+  if (!chatToDelete) return;
+
+  const shouldDelete = window.confirm(
+    `Delete "${chatToDelete.title || "Untitled Chat"}"? This cannot be undone.`
+  );
+  if (!shouldDelete) return;
+
+  chats = chats.filter((chat) => chat.id !== chatId);
+
+  if (activeChatId === chatId) {
+    activeChatId = chats[0]?.id ?? null;
+  }
+
+  if (!activeChatId) {
+    createChat();
+    return;
+  }
+
+  saveChats();
+  render();
+}
+
 function getActiveChat() {
   return chats.find((chat) => chat.id === activeChatId) || null;
 }
@@ -92,6 +116,9 @@ function renderChatList() {
   chats
     .filter((chat) => chat.title.toLowerCase().includes(query))
     .forEach((chat) => {
+      const li = document.createElement("li");
+      li.className = "chat-list-item";
+
       const itemBtn = document.createElement("button");
       itemBtn.type = "button";
       itemBtn.className = `chat-item sidebar-btn${chat.id === activeChatId ? " active" : ""}`;
@@ -101,8 +128,18 @@ function renderChatList() {
         render();
       });
 
-      const li = document.createElement("li");
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "chat-delete-btn";
+      deleteBtn.setAttribute("aria-label", `Delete ${chat.title || "Untitled Chat"}`);
+      deleteBtn.textContent = "🗑";
+      deleteBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        deleteChat(chat.id);
+      });
+
       li.append(itemBtn);
+      li.append(deleteBtn);
       chatListEl.append(li);
     });
 }
