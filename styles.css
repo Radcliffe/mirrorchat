@@ -87,6 +87,36 @@ select {
   width: 100%;
 }
 
+.chat-list-item {
+  position: relative;
+}
+
+.chat-delete-btn {
+  position: absolute;
+  top: 50%;
+  right: 0.4rem;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  border-radius: 0.4rem;
+  padding: 0.2rem;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease;
+}
+
+.chat-list-item:hover .chat-delete-btn,
+.chat-list-item:focus-within .chat-delete-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.chat-delete-btn:hover,
+.chat-delete-btn:focus-visible {
+  background: #333;
+}
+
 .chat-item.active {
   border-color: var(--accent);
 }
