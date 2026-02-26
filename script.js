@@ -37,21 +37,31 @@ messageForm.addEventListener("submit", (event) => {
   const chat = getActiveChat();
   if (!chat) return;
 
+  const selectedRole = normalizeRole(speakerSelect.value);
+
   chat.messages.push({
     id: crypto.randomUUID(),
-    role: speakerSelect.value,
+    role: selectedRole,
     content: text,
   });
 
   messageInput.value = "";
   saveChats();
   renderMessages();
+  setSpeakerForChat(chat);
 });
 
 function loadChats() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    parsed.forEach((chat) => {
+      if (!Array.isArray(chat.messages)) return;
+      chat.messages.forEach((message) => {
+        message.role = normalizeRole(message.role);
+      });
+    });
+    return parsed;
   } catch {
     return [];
   }
@@ -72,6 +82,19 @@ function createChat() {
   activeChatId = chat.id;
   saveChats();
   render();
+}
+
+function normalizeRole(role) {
+  return role === "you" ? "you" : "mirror";
+}
+
+function getNextRole(chat) {
+  const lastRole = normalizeRole(chat?.messages?.at(-1)?.role);
+  return lastRole === "you" ? "mirror" : "you";
+}
+
+function setSpeakerForChat(chat) {
+  speakerSelect.value = chat ? getNextRole(chat) : "you";
 }
 
 function deleteChat(chatId) {
@@ -107,6 +130,7 @@ function render() {
   renderMessages();
   const chat = getActiveChat();
   titleInput.value = chat?.title || "Untitled Chat";
+  setSpeakerForChat(chat);
 }
 
 function renderChatList() {
@@ -168,9 +192,10 @@ function renderMessages() {
   }
 
   chat.messages.forEach((message) => {
+    const normalizedRole = normalizeRole(message.role);
     const node = messageTemplate.content.firstElementChild.cloneNode(true);
-    node.classList.add(message.role);
-    node.querySelector(".speaker").textContent = message.role === "you" ? "You" : "Mirror";
+    node.classList.add(normalizedRole);
+    node.querySelector(".speaker").textContent = normalizedRole === "you" ? "You" : "Mirror";
     node.querySelector(".content").textContent = message.content;
     messageListEl.append(node);
   });
