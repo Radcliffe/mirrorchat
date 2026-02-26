@@ -114,7 +114,16 @@ function renderChatList() {
   chatListEl.innerHTML = "";
 
   chats
-    .filter((chat) => chat.title.toLowerCase().includes(query))
+    .filter((chat) => {
+      if (!query) return true;
+
+      const titleMatches = chat.title.toLowerCase().includes(query);
+      const messageMatches = chat.messages.some((message) =>
+        message.content.toLowerCase().includes(query)
+      );
+
+      return titleMatches || messageMatches;
+    })
     .forEach((chat) => {
       const li = document.createElement("li");
       li.className = "chat-list-item";
